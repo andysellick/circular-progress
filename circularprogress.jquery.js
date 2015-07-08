@@ -16,34 +16,39 @@
 		init: function(){
 			var me = this;
 			this.settings = $.extend({
-				rotateBy: 40, //amount to change progress by in each animation frame
+				rotateBy: 3, //amount to change progress by in each animation frame
 				animateOnLoad: 1, //FIXME?
-				initialPerc: 60, //FIXME
-				initialDeg: 10, //initial position on load
+				initialPerc: 0, //FIXME
+				initialDeg: 360, //initial position on load
 				targetPerc: 0, //FIXME
-				targetDeg: 10000, //target position to animate to on load
-				speed: 1000, //speed of animation
+				targetDeg: 0, //target position to animate to on load
+				speed: 50, //speed of animation
 				innerHTML:'this is the inner wooo', //html to put inside the circle
                 delayAnimation: 0, //FIXME also need callbacks
 			}, this.defaults, this.options);
 			
-			this.panel1;
-			this.panel2;
+			this.panel1; //right
+			this.panel2; //left
 			this.currentpanel;
 			this.timer;
 			this.currentpos = 0;
 			this.overallpos = 0;
 			this.inner;
+			this.rotateBy = 0;
 
             this.circles = {
                 general: {
-                    initialise: function(){
+                    //create required variables
+                    initSettings: function(){
                         //normalise settings
                         me.settings.rotateBy = Math.min(me.settings.rotateBy,360);
                         me.settings.initialPerc = Math.min(me.settings.initialPerc,100);
                         me.settings.targetDeg = Math.min(me.settings.targetDeg,360);
 
-                        //create required elements and variables
+                        me.rotateBy = me.settings.rotateBy;
+                    },
+                    //create required elements
+                    initElements: function(){
                         var prog = $('<div/>').addClass('progressinner').appendTo(me.$elem);
                         var lpane = $('<div/>').addClass('lpane').appendTo(prog);
                         var rpane = $('<div/>').addClass('rpane').appendTo(prog);
@@ -58,46 +63,53 @@
                     }
                 },
                 circle: {
-                    //set the initial position of the circle
+                    //set the position of the circle, no animation
                     setTargetPos: function(){
                         me.overallpos = me.settings.initialDeg;
-                        if(me.settings.initialDeg <= 180){
-                            me.currentpos = me.overallpos;
-                            me.circles.circle.rotateElement(me.currentpanel,me.overallpos);
-                        }
-                        else {
+                        if(me.settings.initialDeg > 180){
                             var extrapos = me.settings.initialDeg - 180;
                             me.circles.circle.rotateElement(me.currentpanel,180);
                             me.currentpos = extrapos;
                             me.currentpanel = me.panel2;
-                            me.circles.circle.rotateElement(me.currentpanel,extrapos);
                         }
-                    },
-                    //manages the rotation of the involved elements
-                    rotateLoop: function(){
-                        if(me.currentpos > 180 && me.overallpos <= 360){
-                            var nextpos = me.currentpos - 180; //to make sure the first panel has fully rotated, need to work out any leftover
-                            me.circles.circle.rotateElement(me.currentpanel,180); //fully rotate the first panel
-                            me.currentpos = nextpos;
-                            me.currentpanel = me.panel2;
-                        }
-                        else if(me.overallpos < 0){
-                        }
-
-                        //if we've not finished animating, keep animating
-                        if(me.overallpos <= me.settings.targetDeg){
-                            me.circles.circle.rotateElement(me.currentpanel,me.currentpos);
-                            me.timer = setTimeout(me.circles.circle.rotateLoop,me.settings.speed);
-                        }
-                        //otherwise stop and make sure we stop at the right place
                         else {
-                            var endpos = me.overallpos - me.settings.targetDeg; //need to also subtract what gets added on at the end of this function
-                            me.currentpos -= endpos;
-                            me.overallpos -= endpos;
-                            me.circles.circle.rotateElement(me.currentpanel,me.currentpos);
+                            me.currentpos = me.overallpos;
                         }
-                        me.currentpos += me.settings.rotateBy;
-                        me.overallpos += me.settings.rotateBy;
+                        me.circles.circle.rotateElement(me.currentpanel,me.currentpos);
+                        console.log(me.currentpos);
+                    },
+                    //given a starting point and an end point, animate the progress
+                    //self calls itself until complete
+                    animateCircle: function(orig,targ){
+                        var rotateby = me.settings.rotateBy;
+                        if(targ < orig){
+                            rotateby = -rotateby;
+                        }
+                        var newpos = orig + rotateby;
+                        if(orig < targ){
+                            newpos = Math.min(newpos,targ);
+                        }
+                        else {
+                            newpos = Math.max(newpos,targ);
+                        }
+                        me.overallpos = newpos;
+                        if(newpos != targ){
+                            setTimeout(function(){
+                                me.circles.circle.animateCircle(newpos,targ);
+                            },me.settings.speed);
+                        }
+                        me.circles.circle.renderCircle();
+                    },
+                    //draws the circular progress using the current position
+                    renderCircle: function(){
+                        if(me.overallpos < 180){
+                            me.circles.circle.rotateElement(me.panel1,me.overallpos);
+                            me.circles.circle.rotateElement(me.panel2,0);
+                        }
+                        else {
+                            me.circles.circle.rotateElement(me.panel1,180);
+                            me.circles.circle.rotateElement(me.panel2,me.overallpos - 180);
+                        }
                     },
                     //given an element, apply a css transform to rotate it
                     rotateElement: function(elem,deg){
@@ -112,16 +124,25 @@
                 }
 
             };
-            me.circles.general.initialise();
+            me.circles.general.initSettings();
+            me.circles.general.initElements();
 
             //option 1 - progress animates from initial to target
             if(me.settings.initialDeg && me.settings.animateOnLoad){
+                if(me.settings.initialDeg > me.settings.targetDeg){ //if target is less than initial, we need to rotate backwards
+                    me.rotateBy = -me.rotateBy;
+                }
                 me.circles.circle.setTargetPos();
-                me.circles.circle.rotateLoop();
+                setTimeout(function(){
+                    me.circles.circle.animateCircle(me.settings.initialDeg,me.settings.targetDeg);
+                },me.settings.speed + me.settings.delayAnimation);
+
             }
             //option 2 - progress animates from 0 to target (no initial value)
             else if(me.settings.animateOnLoad){
-                me.circles.circle.rotateLoop();
+                setTimeout(function(){
+                    me.circles.circle.animateCircle(me.settings.initialDeg,me.settings.targetDeg);
+                },me.settings.speed + me.settings.delayAnimation);
             }
             //option 3 - progress appears immediately at target (no initial value, no animate)
             else {
