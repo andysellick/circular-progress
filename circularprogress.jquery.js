@@ -21,8 +21,8 @@
 				initialPerc: 60, //FIXME
 				initialDeg: 10, //initial position on load
 				targetPerc: 0, //FIXME
-				targetDeg: 270, //target position to animate to on load
-				speed: 600, //speed of animation
+				targetDeg: 10000, //target position to animate to on load
+				speed: 1000, //speed of animation
 				innerHTML:'this is the inner wooo', //html to put inside the circle
                 delayAnimation: 0, //FIXME also need callbacks
 			}, this.defaults, this.options);
@@ -75,13 +75,13 @@
                     },
                     //manages the rotation of the involved elements
                     rotateLoop: function(){
-                        //var newpos = me.overallpos + me.settings.rotateBy;
-
-                        if(me.currentpos > 180){
+                        if(me.currentpos > 180 && me.overallpos <= 360){
                             var nextpos = me.currentpos - 180; //to make sure the first panel has fully rotated, need to work out any leftover
                             me.circles.circle.rotateElement(me.currentpanel,180); //fully rotate the first panel
                             me.currentpos = nextpos;
                             me.currentpanel = me.panel2;
+                        }
+                        else if(me.overallpos < 0){
                         }
 
                         //if we've not finished animating, keep animating
@@ -98,19 +98,6 @@
                         }
                         me.currentpos += me.settings.rotateBy;
                         me.overallpos += me.settings.rotateBy;
-                    },
-                    //check that we're not exceeding any boundaries
-                    checkLimits: function(val){
-                        if(val > 360){
-                            return(1);
-                        }
-                        else if(val > 180){
-                            return(2);
-                        }
-                        else if(val < 0){
-                            return(3);
-                        }
-                        return(0);
                     },
                     //given an element, apply a css transform to rotate it
                     rotateElement: function(elem,deg){
