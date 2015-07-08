@@ -14,12 +14,14 @@
 
 	Plugin.prototype = {
 		init: function(){
-			var thisobj = this;
+			var me = this;
 			this.settings = $.extend({
 				rotateBy: 40, //amount to change progress by in each animation frame
 				animateOnLoad: 1, //FIXME?
 				initialPerc: 60, //FIXME
-				initialDeg: 270, //initial position to animate to on load
+				initialDeg: 10, //initial position on load
+				targetPerc: 0, //FIXME
+				targetDeg: 270, //target position to animate to on load
 				speed: 600, //speed of animation
 				innerHTML:'this is the inner wooo', //html to put inside the circle
                 delayAnimation: 0, //FIXME also need callbacks
@@ -37,49 +39,80 @@
                 general: {
                     initialise: function(){
                         //normalise settings
-                        thisobj.settings.rotateBy = Math.min(thisobj.settings.rotateBy,360);
-                        thisobj.settings.initialPerc = Math.min(thisobj.settings.initialPerc,100);
-                        thisobj.settings.initialDeg = Math.min(thisobj.settings.initialDeg,360);
+                        me.settings.rotateBy = Math.min(me.settings.rotateBy,360);
+                        me.settings.initialPerc = Math.min(me.settings.initialPerc,100);
+                        me.settings.targetDeg = Math.min(me.settings.targetDeg,360);
 
                         //create required elements and variables
-                        var prog = $('<div/>').addClass('progressinner').appendTo(thisobj.$elem);
+                        var prog = $('<div/>').addClass('progressinner').appendTo(me.$elem);
                         var lpane = $('<div/>').addClass('lpane').appendTo(prog);
                         var rpane = $('<div/>').addClass('rpane').appendTo(prog);
                         
-                        thisobj.panel1 = $('<div/>').addClass('cover').appendTo(rpane);
-                        thisobj.panel2 = $('<div/>').addClass('cover').appendTo(lpane);
-                        thisobj.currentpanel = thisobj.panel1;
+                        me.panel1 = $('<div/>').addClass('cover').appendTo(rpane);
+                        me.panel2 = $('<div/>').addClass('cover').appendTo(lpane);
+                        me.currentpanel = me.panel1;
                         
-                        if(thisobj.settings.innerHTML.length){
-                            thisobj.inner = $('<div/>').addClass('display').html(thisobj.settings.innerHTML).appendTo(prog);
+                        if(me.settings.innerHTML.length){
+                            me.inner = $('<div/>').addClass('display').html(me.settings.innerHTML).appendTo(prog);
                         }
                     }
                 },
-                circles: {
+                circle: {
+                    //set the initial position of the circle
+                    setTargetPos: function(){
+                        me.overallpos = me.settings.initialDeg;
+                        if(me.settings.initialDeg <= 180){
+                            me.currentpos = me.overallpos;
+                            me.circles.circle.rotateElement(me.currentpanel,me.overallpos);
+                        }
+                        else {
+                            var extrapos = me.settings.initialDeg - 180;
+                            me.circles.circle.rotateElement(me.currentpanel,180);
+                            me.currentpos = extrapos;
+                            me.currentpanel = me.panel2;
+                            me.circles.circle.rotateElement(me.currentpanel,extrapos);
+                        }
+                    },
                     //manages the rotation of the involved elements
                     rotateLoop: function(){
-                        if(thisobj.currentpos > 180){
-                            var nextpos = thisobj.currentpos - 180; //to make sure the first panel has fully rotated, need to work out any leftover
-                            thisobj.circles.circles.rotateElement(thisobj.currentpanel,180); //fully rotate the first panel
-                            thisobj.currentpos = nextpos;
-                            thisobj.currentpanel = thisobj.panel2;
+                        //var newpos = me.overallpos + me.settings.rotateBy;
+
+                        if(me.currentpos > 180){
+                            var nextpos = me.currentpos - 180; //to make sure the first panel has fully rotated, need to work out any leftover
+                            me.circles.circle.rotateElement(me.currentpanel,180); //fully rotate the first panel
+                            me.currentpos = nextpos;
+                            me.currentpanel = me.panel2;
                         }
 
                         //if we've not finished animating, keep animating
-                        if(thisobj.overallpos <= thisobj.settings.initialDeg){
-                            thisobj.circles.circles.rotateElement(thisobj.currentpanel,thisobj.currentpos);
-                            thisobj.timer = setTimeout(thisobj.circles.circles.rotateLoop,thisobj.settings.speed);
+                        if(me.overallpos <= me.settings.targetDeg){
+                            me.circles.circle.rotateElement(me.currentpanel,me.currentpos);
+                            me.timer = setTimeout(me.circles.circle.rotateLoop,me.settings.speed);
                         }
                         //otherwise stop and make sure we stop at the right place
                         else {
-                            var endpos = thisobj.overallpos - thisobj.settings.initialDeg; //need to also subtract what gets added on at the end of this function
-                            thisobj.currentpos -= endpos;
-                            thisobj.overallpos -= endpos;
-                            thisobj.circles.circles.rotateElement(thisobj.currentpanel,thisobj.currentpos);
+                            var endpos = me.overallpos - me.settings.targetDeg; //need to also subtract what gets added on at the end of this function
+                            me.currentpos -= endpos;
+                            me.overallpos -= endpos;
+                            me.circles.circle.rotateElement(me.currentpanel,me.currentpos);
                         }
-                        thisobj.currentpos += thisobj.settings.rotateBy;
-                        thisobj.overallpos += thisobj.settings.rotateBy;
+                        me.currentpos += me.settings.rotateBy;
+                        me.overallpos += me.settings.rotateBy;
                     },
+                    //check that we're not exceeding any boundaries
+                    checkLimits: function(val){
+                        if(val > 360){
+                            return(1);
+                        }
+                        else if(val > 180){
+                            return(2);
+                        }
+                        else if(val < 0){
+                            return(3);
+                        }
+                        return(0);
+                    },
+                    //given an element, apply a css transform to rotate it
                     rotateElement: function(elem,deg){
                         elem.css({
                             'transform': 'rotate('+deg+'deg)',
@@ -92,11 +125,20 @@
                 }
 
             };
+            me.circles.general.initialise();
 
-
-            thisobj.circles.general.initialise();
-            if(thisobj.settings.animateOnLoad){
-                thisobj.timer = setTimeout(thisobj.circles.circles.rotateLoop,0); //no delay on initial load
+            //option 1 - progress animates from initial to target
+            if(me.settings.initialDeg && me.settings.animateOnLoad){
+                me.circles.circle.setTargetPos();
+                me.circles.circle.rotateLoop();
+            }
+            //option 2 - progress animates from 0 to target (no initial value)
+            else if(me.settings.animateOnLoad){
+                me.circles.circle.rotateLoop();
+            }
+            //option 3 - progress appears immediately at target (no initial value, no animate)
+            else {
+                me.circles.circle.setTargetPos();
             }
 
 		},

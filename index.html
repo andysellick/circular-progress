@@ -10,7 +10,12 @@
 
 <body>
 
-    <div class="progress newtest"></div>
+    <div style="float:left;width:50%;">
+        <div class="progress newtest1"></div>
+    </div>
+    <div style="float:left;width:50%;">
+        <div class="progress newtest2"></div>
+    </div>
 
 
 
@@ -47,7 +52,13 @@
     <script>
         $(document).ready(function(){
         
-            $('.newtest').circles();
+            $('.newtest1').circles();
+            $('.newtest2').circles({
+                'targetDeg':185,
+                'speed':10,
+                'rotateBy':1,
+                'innerHTML':''
+            });
 
         /*
             $('.test1').rounders({ type: 'disc', percent: 31 });

@@ -2,7 +2,7 @@
 
     @complete: green; //colour of completed progress bar
     @incomplete: red; //colour of incomplete progress bar
-    @inner: silver; //colour of interior of circle
+    @inner: #FFFFFF; //colour of interior of circle
     @border: #000000; //colour of border round circle
 
     .progress {
@@ -15,10 +15,11 @@
             left:0;
             width:100%;
             height:100%;
-            background:@inner;
+            background:@incomplete;
             .border-radius( 1000px );
             .border-box();
             overflow:hidden;
+            border:solid 10px @border;
 
             .lpane,
             .rpane {
@@ -29,7 +30,6 @@
                 width:51%;
                 height:100%;
                 overflow:hidden;
-                background:@incomplete;
                 .cover {
                     position:absolute;
                     top:-5%;
