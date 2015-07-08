@@ -1,0 +1,65 @@
+@import 'mixins.less';
+
+    @complete: green; //colour of completed progress bar
+    @incomplete: red; //colour of incomplete progress bar
+    @inner: silver; //colour of interior of circle
+    @border: #000000; //colour of border round circle
+
+    .progress {
+        position:relative;
+        padding-bottom:100%;
+        
+        .progressinner {
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:@inner;
+            .border-radius( 1000px );
+            .border-box();
+            overflow:hidden;
+
+            .lpane,
+            .rpane {
+                content:"";
+                position:absolute;
+                top:0;
+                left:-1%;
+                width:51%;
+                height:100%;
+                overflow:hidden;
+                background:@incomplete;
+                .cover {
+                    position:absolute;
+                    top:-5%;
+                    left:100%;
+                    width:100%;
+                    height:110%;
+                    background:@complete;
+                    .transform-point( 0% 50% );
+                }
+            }
+            .rpane {
+                left:49.5%;
+                .cover {
+                    left:auto;
+                    right:100%;
+                    .transform-point( 100% 50% );
+                }
+            }
+
+            .display {
+                position:absolute;
+                top:5%;
+                left:5%;
+                width:90%;
+                height:90%;
+                .border-radius( 1000px );
+                .border-box();
+                background:@inner;
+                text-align:center;
+            }
+        }
+
+    }

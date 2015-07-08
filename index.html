@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CSS circular progress bar</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="circularprogress.css"/>
+</head>
+
+<body>
+
+    <div class="progress newtest"></div>
+
+
+
+
+
+    <hr/>
+<!--
+    <h2>Plugin controlled individual instances</h2>
+    <h3>Circles</h3>
+    <div class="progress test1"></div>
+    <div class="progress test2"></div>
+    <div class="progress test3"></div>
+    <div class="progress test4">
+        <div class="cover">
+            Hello there
+            <span class="status"></span>
+            steps done
+        </div>
+    </div>
+
+    <h3>Horizontal bars</h3>
+    <div class="progress test5"></div>
+    <div class="progress test6" style="width:300px"></div>
+    <div class="progress test7" style="width:700px"></div>
+
+    <h3>Vertical bars</h3>
+    <div class="progress test8"></div>
+    <div class="progress test9" style="height:110px"></div>
+    <div class="progress test10" style="height:200px"></div>
+-->
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="circularprogress.jquery.js"></script>
+    <script>
+        $(document).ready(function(){
+        
+            $('.newtest').circles();
+
+        /*
+            $('.test1').rounders({ type: 'disc', percent: 31 });
+            $('.test2').rounders({ type: 'circle', percent: 93, counter: 0, controls: 1 });
+            $('.test3').rounders({ type: 'circle', percent: 55, speed: 10, controls: 1 });
+            $('.test4').rounders({ type: 'circle', scale: 13, position: 3 });
+            $('.test5').circles({ type: 'hbar', percent: 10, controls: 1 });
+            $('.test6').rounders({ type: 'hbar', percent: 100 });
+            $('.test7').rounders({ type: 'hbar', percent: 10, counter: 1, speed: 30, controls: 1 });
+            $('.test8').rounders({ type: 'vbar', percent: 50, speed: 30 });
+            $('.test9').rounders({ type: 'vbar', percent: 50, speed: 30 });
+            $('.test10').rounders({ type: 'vbar', percent: 50, speed: 1, controls: 1 });
+        */
+        });
+    </script>
+
+</body>
+</html>
