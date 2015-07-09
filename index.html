@@ -19,9 +19,10 @@
 
 
 
+    <hr style="clear: both; margin: 50px 0;"/>
 
-
-    <hr/>
+    <a href="#" id="test1">Test 1</a>
+    <a href="#" id="test2">Test 2</a>
 <!--
     <h2>Plugin controlled individual instances</h2>
     <h3>Circles</h3>
@@ -52,15 +53,15 @@
     <script>
         $(document).ready(function(){
         
-            $('.newtest1').circles();
-/*
+            var test = $('.newtest1').circles();
+
             $('.newtest2').circles({
                 'targetDeg':185,
                 'speed':10,
                 'rotateBy':1,
                 'innerHTML':''
             });
-*/
+
         /*
             $('.test1').rounders({ type: 'disc', percent: 31 });
             $('.test2').rounders({ type: 'circle', percent: 93, counter: 0, controls: 1 });
@@ -73,6 +74,19 @@
             $('.test9').rounders({ type: 'vbar', percent: 50, speed: 30 });
             $('.test10').rounders({ type: 'vbar', percent: 50, speed: 1, controls: 1 });
         */
+        
+        $('#test1').click(function(e){
+            e.preventDefault();
+            var moo = $('.newtest1').data('myplugin');
+            moo.publicMethod();
+        });
+
+        $('#test2').click(function(e){
+            e.preventDefault();
+            var moo = $('.newtest2').data('myplugin');
+            moo.publicMethod();
+        });
+
         });
     </script>
 

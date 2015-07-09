@@ -9,7 +9,15 @@
 	var Plugin = function(elem,options){
 		this.elem = elem;
 		this.$elem = $(elem);
-		this.options = options
+		this.options = options;
+		/* syntax to use outside the plugin - thankyou http://www.virgentech.com/blog/2009/10/building-object-oriented-jquery-plugin.html
+            var moo = $('.newtest1').data('myplugin');
+            moo.publicMethod();
+		*/
+		//a public method oh my that took a lot of research
+		this.publicMethod = function(){
+            this.circles.circle.animateCircle(this.overallpos,300);
+        };
 	}
 
 	Plugin.prototype = {
@@ -24,9 +32,9 @@
 				targetDeg: 200, //target position to animate to on load
 				speed: 50, //speed of animation
 				innerHTML:'this is the inner wooo', //html to put inside the circle
-                delayAnimation: 500, //FIXME also need callbacks
+                delayAnimation: 500,
 			}, this.defaults, this.options);
-			
+
 			this.rpanel; //right
 			this.lpanel; //left
 			this.timer;
@@ -134,12 +142,21 @@
             else {
                 me.circles.circle.setTargetPos(me.settings.initialDeg);
             }
-
 		},
+		publicMethod: function(){
+            console.log('moo');
+        }
 	}
 	$.fn.circles = function(options){
 		return this.each(function(){
-			new Plugin(this,options).init();
+			//new Plugin(this,options).init();
+            var el = $(this);
+            // Return early if this element already has a plugin instance
+            if (el.data('myplugin')) return;
+            var myplugin = new Plugin(this,options);
+            myplugin.init();
+            // Store plugin object in this element's data
+            el.data('myplugin', myplugin);
 		});
 	}
 	window.Plugin = Plugin;
