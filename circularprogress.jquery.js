@@ -19,22 +19,19 @@
 				rotateBy: 3, //amount to change progress by in each animation frame
 				animateOnLoad: 1, //FIXME?
 				initialPerc: 0, //FIXME
-				initialDeg: 360, //initial position on load
+				initialDeg: 100, //initial position on load
 				targetPerc: 0, //FIXME
-				targetDeg: 0, //target position to animate to on load
+				targetDeg: 200, //target position to animate to on load
 				speed: 50, //speed of animation
 				innerHTML:'this is the inner wooo', //html to put inside the circle
-                delayAnimation: 0, //FIXME also need callbacks
+                delayAnimation: 500, //FIXME also need callbacks
 			}, this.defaults, this.options);
 			
-			this.panel1; //right
-			this.panel2; //left
-			this.currentpanel;
+			this.rpanel; //right
+			this.lpanel; //left
 			this.timer;
-			this.currentpos = 0;
 			this.overallpos = 0;
 			this.inner;
-			this.rotateBy = 0;
 
             this.circles = {
                 general: {
@@ -53,10 +50,9 @@
                         var lpane = $('<div/>').addClass('lpane').appendTo(prog);
                         var rpane = $('<div/>').addClass('rpane').appendTo(prog);
                         
-                        me.panel1 = $('<div/>').addClass('cover').appendTo(rpane);
-                        me.panel2 = $('<div/>').addClass('cover').appendTo(lpane);
-                        me.currentpanel = me.panel1;
-                        
+                        me.rpanel = $('<div/>').addClass('cover').appendTo(rpane);
+                        me.lpanel = $('<div/>').addClass('cover').appendTo(lpane);
+
                         if(me.settings.innerHTML.length){
                             me.inner = $('<div/>').addClass('display').html(me.settings.innerHTML).appendTo(prog);
                         }
@@ -64,19 +60,9 @@
                 },
                 circle: {
                     //set the position of the circle, no animation
-                    setTargetPos: function(){
-                        me.overallpos = me.settings.initialDeg;
-                        if(me.settings.initialDeg > 180){
-                            var extrapos = me.settings.initialDeg - 180;
-                            me.circles.circle.rotateElement(me.currentpanel,180);
-                            me.currentpos = extrapos;
-                            me.currentpanel = me.panel2;
-                        }
-                        else {
-                            me.currentpos = me.overallpos;
-                        }
-                        me.circles.circle.rotateElement(me.currentpanel,me.currentpos);
-                        console.log(me.currentpos);
+                    setTargetPos: function(targ){
+                        me.overallpos = targ;
+                        me.circles.circle.renderCircle();
                     },
                     //given a starting point and an end point, animate the progress
                     //self calls itself until complete
@@ -103,12 +89,12 @@
                     //draws the circular progress using the current position
                     renderCircle: function(){
                         if(me.overallpos < 180){
-                            me.circles.circle.rotateElement(me.panel1,me.overallpos);
-                            me.circles.circle.rotateElement(me.panel2,0);
+                            me.circles.circle.rotateElement(me.rpanel,me.overallpos);
+                            me.circles.circle.rotateElement(me.lpanel,0);
                         }
                         else {
-                            me.circles.circle.rotateElement(me.panel1,180);
-                            me.circles.circle.rotateElement(me.panel2,me.overallpos - 180);
+                            me.circles.circle.rotateElement(me.rpanel,180);
+                            me.circles.circle.rotateElement(me.lpanel,me.overallpos - 180);
                         }
                     },
                     //given an element, apply a css transform to rotate it
@@ -132,7 +118,7 @@
                 if(me.settings.initialDeg > me.settings.targetDeg){ //if target is less than initial, we need to rotate backwards
                     me.rotateBy = -me.rotateBy;
                 }
-                me.circles.circle.setTargetPos();
+                me.circles.circle.setTargetPos(me.settings.initialDeg);
                 setTimeout(function(){
                     me.circles.circle.animateCircle(me.settings.initialDeg,me.settings.targetDeg);
                 },me.settings.speed + me.settings.delayAnimation);
@@ -146,7 +132,7 @@
             }
             //option 3 - progress appears immediately at target (no initial value, no animate)
             else {
-                me.circles.circle.setTargetPos();
+                me.circles.circle.setTargetPos(me.settings.initialDeg);
             }
 
 		},
