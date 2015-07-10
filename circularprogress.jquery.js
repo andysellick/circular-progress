@@ -23,7 +23,8 @@
 				targetPerc: 0, //FIXME
 				targetDeg: 200, //target position to animate to on load
 				speed: 50, //speed of animation
-				innerHTML:'this is the inner wooo', //html to put inside the circle
+				innerHTML:'', //html to put inside the circle
+				showProgress: 0, //add an additional element into the inner to show the current position
                 delayAnimation: 500,
                 onFinishMoving: function() {},
 			}, this.defaults, this.options);
@@ -32,6 +33,9 @@
 			this.lpanel; //left
 			this.overallpos = 0;
 			this.inner;
+			this.innerhtml;
+			this.innerprogress;
+			this.timer;
 
             //create required variables and normalise settings
             this.settings.rotateBy = Math.min(this.settings.rotateBy,360);
@@ -45,8 +49,16 @@
             var rpane = $('<div/>').addClass('rpane').appendTo(prog);
             this.rpanel = $('<div/>').addClass('cover').appendTo(rpane);
             this.lpanel = $('<div/>').addClass('cover').appendTo(lpane);
+
+            //FIXME what if a user wants the circular progress ring but with no text inside it?
+            if(this.settings.innerHTML.length || this.settings.showProgress){
+                this.inner = $('<div/>').addClass('display').appendTo(prog);
+            }
             if(this.settings.innerHTML.length){
-                this.inner = $('<div/>').addClass('display').html(this.settings.innerHTML).appendTo(prog);
+                this.innerhtml = $('<div/>').addClass('extrahtml').html(this.settings.innerHTML).appendTo(this.inner);
+            }
+            if(this.settings.showProgress){
+                this.innerprogress = $('<div/>').addClass('displayprogress').appendTo(this.inner);
             }
             //now get the plugin started
             var me = this;
@@ -56,14 +68,14 @@
                     this.rotateBy = -this.rotateBy;
                 }
                 this.setTargetPos(this.settings.initialDeg);
-                setTimeout(function(){
+                this.timer = setTimeout(function(){
                     me.animateCircle(me.settings.initialDeg,me.settings.targetDeg);
                 },this.settings.speed + this.settings.delayAnimation);
 
             }
             //option 2 - progress animates from 0 to target (no initial value)
             else if(this.settings.animateOnLoad){
-                setTimeout(function(){
+                this.timer = setTimeout(function(){
                     me.animateCircle(me.settings.initialDeg,me.settings.targetDeg);
                 },this.settings.speed + this.settings.delayAnimation);
             }
@@ -96,7 +108,7 @@
             var me = this;
             this.overallpos = newpos;
             if(newpos != targ){
-                setTimeout(function(){
+                this.timer = setTimeout(function(){
                     me.animateCircle(newpos,targ);
                 },this.settings.speed);
             }
@@ -116,6 +128,9 @@
                 this.rotateElement(this.rpanel,180);
                 this.rotateElement(this.lpanel,this.overallpos - 180);
             }
+            if(this.settings.showProgress){
+                this.innerprogress.html(this.overallpos);
+            }
         },
 
         //given an element, apply a css transform to rotate it
@@ -131,6 +146,7 @@
 
         //intended as a public function, pass through the position you want
 		moveProgress: function(targ){
+            clearTimeout(this.timer);
             this.animateCircle(this.overallpos,targ);
         },
 

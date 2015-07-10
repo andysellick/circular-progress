@@ -28,18 +28,19 @@
         $(document).ready(function(){
 
             $('.newtest1').circles({
+                innerHTML: 'this is the inner wooo',
+                showProgress: 1,
                 onFinishMoving:function(pos){
                     console.log('done ',pos);
                 }
             });
-/*
+
             $('.newtest2').circles({
                 'targetDeg':185,
-                'speed':100,
+                'speed':90,
                 'rotateBy':1,
                 'innerHTML':''
             });
-*/
 
             $('#test1').click(function(e){
                 e.preventDefault();
