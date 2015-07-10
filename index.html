@@ -12,17 +12,22 @@
 
     <div style="float:left;width:50%;">
         <div class="progress newtest1"></div>
+
+        <a href="#" id="test1">Test 1</a>
+        <input type="num" id="test1num"/>
     </div>
     <div style="float:left;width:50%;">
         <div class="progress newtest2"></div>
+
+        <a href="#" id="test2">Test 2</a>
+        <input type="num" id="test2num"/>
     </div>
 
 
 
     <hr style="clear: both; margin: 50px 0;"/>
 
-    <a href="#" id="test1">Test 1</a>
-    <a href="#" id="test2">Test 2</a>
+
 <!--
     <h2>Plugin controlled individual instances</h2>
     <h3>Circles</h3>
@@ -77,14 +82,14 @@
         
         $('#test1').click(function(e){
             e.preventDefault();
-            var moo = $('.newtest1').data('myplugin');
-            moo.publicMethod();
+            var moo = $('.newtest1').data('circles');
+            moo.moveProgress($('#test1num').val());
         });
 
         $('#test2').click(function(e){
             e.preventDefault();
-            var moo = $('.newtest2').data('myplugin');
-            moo.publicMethod();
+            var moo = $('.newtest2').data('circles');
+            moo.moveProgress($('#test2num').val());
         });
 
         });
