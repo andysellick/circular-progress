@@ -15,7 +15,6 @@
 
 	Plugin.prototype = {
 		init: function(){
-			var me = this;
 			this.settings = $.extend({
 				rotateBy: 3, //amount to change progress by in each animation frame
 				animateOnLoad: 1, //FIXME?
@@ -26,6 +25,7 @@
 				speed: 50, //speed of animation
 				innerHTML:'this is the inner wooo', //html to put inside the circle
                 delayAnimation: 500,
+                onFinishMoving: function() {},
 			}, this.defaults, this.options);
 
 			this.rpanel; //right
@@ -49,9 +49,8 @@
                 this.inner = $('<div/>').addClass('display').html(this.settings.innerHTML).appendTo(prog);
             }
             //now get the plugin started
-            //option 1 - progress animates from initial to target
             var me = this;
-
+            //option 1 - progress animates from initial to target
             if(this.settings.initialDeg && this.settings.animateOnLoad){
                 if(this.settings.initialDeg > this.settings.targetDeg){ //if target is less than initial, we need to rotate backwards
                     this.rotateBy = -this.rotateBy;
@@ -83,7 +82,6 @@
         //given a starting point and an end point, animate the progress
         //self calls itself until complete
         animateCircle: function(orig,targ){
-            var me = this;
             var rotateby = this.settings.rotateBy;
             if(targ < orig){
                 rotateby = -rotateby;
@@ -95,11 +93,15 @@
             else {
                 newpos = Math.max(newpos,targ);
             }
+            var me = this;
             this.overallpos = newpos;
             if(newpos != targ){
                 setTimeout(function(){
                     me.animateCircle(newpos,targ);
                 },this.settings.speed);
+            }
+            else {
+                this.settings.onFinishMoving.call(this,this.overallpos); //call callback
             }
             this.renderCircle();
         },
@@ -127,17 +129,11 @@
             });
         },
 
+        //intended as a public function, pass through the position you want
 		moveProgress: function(targ){
             this.animateCircle(this.overallpos,targ);
         },
 
-        publicf: function(){
-            console.log('public');
-        },
-
-        _privateMethod: function(){
-            console.log('private');
-        }
 	}
 	$.fn.circles = function(options){
 		/* syntax to use outside the plugin - http://acuriousanimal.com/blog/2013/02/25/things-i-learned-creating-a-jquery-plugin-part-ii/
@@ -148,7 +144,6 @@
             //create plugin instance for each element and store reference to the plugin within the data attr
             return this.each(function() {
                 if (!$.data(this, 'circles')) {
-                    var myplugin = new Plugin(this, options);
                     $.data(this, 'circles', new Plugin(this, options));
                 }
             });
