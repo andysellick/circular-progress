@@ -17,11 +17,11 @@
 		init: function(){
 			this.settings = $.extend({
 				rotateBy: 1, //amount to change progress by in each animation frame
-				animateOnLoad: 1, //FIXME?
 				initialPos: 0, //initial position on load
 				targetPos: 0, //target position to animate to on load
 				usePercent: 0, //if true, assume all values passed are percentages, not degrees round the circle
 				speed: 50, //speed of animation
+				includeInner: 0, //if true, make the progress a 'ring' instead of a solid circle
 				innerHTML:'', //html to put inside the circle
 				showProgress: 0, //add an additional element into the inner to show the current position
                 delayAnimation: 500,
@@ -62,8 +62,7 @@
             this.rpanel = $('<div/>').addClass('cover').appendTo(rpane);
             this.lpanel = $('<div/>').addClass('cover').appendTo(lpane);
 
-            //FIXME what if a user wants the circular progress ring but with no text inside it?
-            if(this.settings.innerHTML.length || this.settings.showProgress){
+            if(this.settings.innerHTML.length || this.settings.showProgress || this.settings.includeInner){
                 this.inner = $('<div/>').addClass('display').appendTo(prog);
             }
             if(this.settings.innerHTML.length){
@@ -75,7 +74,7 @@
             //now get the plugin started
             var me = this;
             //option 1 - progress animates from initial to target
-            if(this.settings.initialPos && this.settings.animateOnLoad){
+            if(this.settings.initialPos && this.settings.initialPos != this.settings.targetPos){
                 if(this.settings.initialPos > this.settings.targetPos){ //if target is less than initial, we need to rotate backwards
                     this.rotateBy = -this.rotateBy;
                 }
@@ -86,7 +85,7 @@
 
             }
             //option 2 - progress animates from 0 to target (no initial value)
-            else if(this.settings.animateOnLoad){
+            else if(this.settings.initialPos != this.settings.targetPos){
                 this.timer = setTimeout(function(){
                     me.animateCircle(me.settings.initialPos,me.settings.targetPos);
                 },this.settings.speed + this.settings.delayAnimation);
