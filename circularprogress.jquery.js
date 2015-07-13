@@ -16,12 +16,11 @@
 	Plugin.prototype = {
 		init: function(){
 			this.settings = $.extend({
-				rotateBy: 3, //amount to change progress by in each animation frame
+				rotateBy: 1, //amount to change progress by in each animation frame
 				animateOnLoad: 1, //FIXME?
-				initialPerc: 0, //FIXME
-				initialDeg: 100, //initial position on load
-				targetPerc: 0, //FIXME
-				targetDeg: 200, //target position to animate to on load
+				initialPos: 0, //initial position on load
+				targetPos: 0, //target position to animate to on load
+				usePercent: 0, //if true, assume all values passed are percentages, not degrees round the circle
 				speed: 50, //speed of animation
 				innerHTML:'', //html to put inside the circle
 				showProgress: 0, //add an additional element into the inner to show the current position
@@ -38,9 +37,22 @@
 			this.timer;
 
             //create required variables and normalise settings
-            this.settings.rotateBy = Math.min(this.settings.rotateBy,360);
-            this.settings.initialPerc = Math.min(this.settings.initialPerc,100);
-            this.settings.targetDeg = Math.min(this.settings.targetDeg,360);
+            var limit = 360;
+            if(this.settings.usePercent){
+                limit = 100;
+            }
+            this.settings.rotateBy = Math.min(this.settings.rotateBy,limit);
+            this.settings.initialPos = Math.min(this.settings.initialPos,limit);
+            this.settings.targetPos = Math.min(this.settings.targetPos,limit);
+
+            //if this flag is set, assume all values passed are percentages, and convert accordingly
+            if(this.settings.usePercent){
+                if(this.settings.rotateBy){
+                    this.settings.rotateBy = (360 / 100) * this.settings.rotateBy;
+                    this.settings.initialPos = (360 / 100) * this.settings.initialPos;
+                    this.settings.targetPos = (360 / 100) * this.settings.targetPos;
+                }
+            }
             this.rotateBy = this.settings.rotateBy; //fixme this is currently used but probably isn't needed
 
             //create required elements
@@ -63,25 +75,25 @@
             //now get the plugin started
             var me = this;
             //option 1 - progress animates from initial to target
-            if(this.settings.initialDeg && this.settings.animateOnLoad){
-                if(this.settings.initialDeg > this.settings.targetDeg){ //if target is less than initial, we need to rotate backwards
+            if(this.settings.initialPos && this.settings.animateOnLoad){
+                if(this.settings.initialPos > this.settings.targetPos){ //if target is less than initial, we need to rotate backwards
                     this.rotateBy = -this.rotateBy;
                 }
-                this.setTargetPos(this.settings.initialDeg);
+                this.setTargetPos(this.settings.initialPos);
                 this.timer = setTimeout(function(){
-                    me.animateCircle(me.settings.initialDeg,me.settings.targetDeg);
+                    me.animateCircle(me.settings.initialPos,me.settings.targetPos);
                 },this.settings.speed + this.settings.delayAnimation);
 
             }
             //option 2 - progress animates from 0 to target (no initial value)
             else if(this.settings.animateOnLoad){
                 this.timer = setTimeout(function(){
-                    me.animateCircle(me.settings.initialDeg,me.settings.targetDeg);
+                    me.animateCircle(me.settings.initialPos,me.settings.targetPos);
                 },this.settings.speed + this.settings.delayAnimation);
             }
             //option 3 - progress appears immediately at target (no initial value, no animate)
             else {
-                this.setTargetPos(this.settings.initialDeg);
+                this.setTargetPos(this.settings.initialPos);
             }
         },
         
@@ -113,7 +125,11 @@
                 },this.settings.speed);
             }
             else {
-                this.settings.onFinishMoving.call(this,this.overallpos); //call callback
+                var output = this.overallpos;
+                if(this.settings.usePercent){
+                    output = Math.floor((output / 360) * 100);
+                }
+                this.settings.onFinishMoving.call(this,output); //call callback
             }
             this.renderCircle();
         },
@@ -129,7 +145,12 @@
                 this.rotateElement(this.lpanel,this.overallpos - 180);
             }
             if(this.settings.showProgress){
-                this.innerprogress.html(this.overallpos);
+                var output = this.overallpos;
+                if(this.settings.usePercent){
+                    output = Math.floor((output / 360) * 100) + '%';
+                }
+
+                this.innerprogress.html(output);
             }
         },
 
@@ -147,7 +168,14 @@
         //intended as a public function, pass through the position you want
 		moveProgress: function(targ){
             clearTimeout(this.timer);
-            this.animateCircle(this.overallpos,targ);
+            targ = Math.min(360,targ);
+            if(this.settings.usePercent){
+                targ = Math.min(100,targ);
+                targ = (360 / 100) * targ;
+            }
+            if(targ != this.overallpos){
+                this.animateCircle(this.overallpos,targ);
+            }
         },
 
 	}

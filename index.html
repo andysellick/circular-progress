@@ -12,13 +12,13 @@
         <div class="progress newtest1"></div>
 
         <a href="#" id="test1">Test 1</a>
-        <input type="num" id="test1num"/>
+        <input type="number" id="test1num"/>
     </div>
     <div style="float:left;width:50%;">
         <div class="progress newtest2"></div>
 
         <a href="#" id="test2">Test 2</a>
-        <input type="num" id="test2num"/>
+        <input type="number" id="test2num"/>
     </div>
 
 
@@ -30,16 +30,21 @@
             $('.newtest1').circles({
                 innerHTML: 'this is the inner wooo',
                 showProgress: 1,
+                targetPos:50,
+                usePercent: 1,
                 onFinishMoving:function(pos){
                     console.log('done ',pos);
                 }
             });
 
             $('.newtest2').circles({
-                'targetDeg':185,
-                'speed':90,
-                'rotateBy':1,
-                'innerHTML':''
+                'targetPos':185,
+                'speed':50,
+                'rotateBy':2,
+                'innerHTML':'',
+                onFinishMoving:function(pos){
+                    console.log('done ',pos);
+                }
             });
 
             $('#test1').click(function(e){
