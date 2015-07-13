@@ -36,7 +36,7 @@
                 innerHTML: 'this is the inner wooo',
                 showProgress: 1,
                 initialPos:1,
-                targetPos:3,
+                targetPos:5,
                 scale: 6,
                 progPreText: 'Step ',
                 progPostText: ' of 6',
@@ -47,10 +47,8 @@
             });
 
             $('.newtest2').circles({
-                'targetPos':185,
-                'speed':50,
-                'rotateBy':2,
-                'innerHTML':'',
+                'targetPos':260,
+                speed: 40,
                 onFinishMoving:function(pos){
                     console.log('done ',pos);
                 }

@@ -41,6 +41,13 @@
         opacity: @trans; /* Good browsers */
     }
 
+	/* shadow */
+	/* usage: .box-shadow( ~"0 1px 0 red, 0 -1px 0 green" ); */
+	.box-shadow( @shadow ) {
+		-webkit-box-shadow: @shadow;
+		box-shadow        : @shadow;
+	}
+
 	/* --box sizing */
 	.border-box {
 		-moz-box-sizing   : border-box;

@@ -1,9 +1,9 @@
 @import 'mixins.less';
 
-    @complete: green; //colour of completed progress bar
-    @incomplete: red; //colour of incomplete progress bar
-    @inner: #FFFFFF; //colour of interior of circle
-    @border: #000000; //colour of border round circle
+    @complete: #319d22; //colour of completed progress bar
+    @incomplete: #9d2222; //colour of incomplete progress bar
+    @inner: #c3c3c3; //colour of interior of circle
+    @border: #c3c3c3; //colour of border round circle
 
     .progress {
         position:relative;
@@ -16,20 +16,22 @@
             width:100%;
             height:100%;
             background:@incomplete;
-            .border-radius( 1000px );
+            .border-radius( 10000px );
             .border-box();
             overflow:hidden;
             border:solid 10px @border;
+            //.box-shadow( 0 0 0 10px @border );
 
             .lpane,
             .rpane {
                 content:"";
                 position:absolute;
-                top:0;
+                top:-1%;
                 left:-1%;
                 width:51%;
-                height:100%;
+                height:102%;
                 overflow:hidden;
+                .border-radius( 10000px 0 0 10000px );
                 .cover {
                     position:absolute;
                     top:-5%;
@@ -42,6 +44,7 @@
             }
             .rpane {
                 left:49.5%;
+                .border-radius( 0 10000px 10000px 0 );
                 .cover {
                     left:auto;
                     right:100%;
