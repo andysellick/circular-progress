@@ -5,25 +5,40 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="circularprogress.css"/>
+    <style>
+        .example {
+            float:left;
+            width:33%;
+        }
+        .example p {
+            text-align:center;
+        }
+    </style>
 </head>
 
 <body>
-    <div style="float:left;width:33%;">
+    <div class="example">
         <div class="progress newtest1"></div>
-        <a href="#" id="test1">Test 1</a>
-        <input type="number" id="test1num"/>
+        <p>
+            <a href="#" id="test1">Move to</a>
+            <input type="number" id="test1num"/>
+        </p>
     </div>
 
-    <div style="float:left;width:33%;">
+    <div class="example">
         <div class="progress newtest2"></div>
-        <a href="#" id="test2">Test 2</a>
-        <input type="number" id="test2num"/>
+        <p>
+            <a href="#" id="test2">Move to</a>
+            <input type="number" id="test2num"/>
+        </p>
     </div>
 
-    <div style="float:left;width:33%;">
+    <div class="example">
         <div class="progress newtest3"></div>
-        <a href="#" id="test3">Test 3</a>
-        <input type="number" id="test3num"/>
+        <p>
+            <a href="#" id="test3">Move to</a>
+            <input type="number" id="test3num"/>
+        </p>
     </div>
 
 
@@ -55,7 +70,8 @@
             });
 
             $('.newtest3').circles({
-                targetPos:90,
+                initialPos:90,
+                targetPos:10,
                 showProgress: 1,
                 scale: 100,
                 progPostText: '%',

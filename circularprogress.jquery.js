@@ -1,9 +1,13 @@
 /*
+    JQUERY CIRCULAR PROGRESS PLUGIN
     Usage:
+        $('.element').circles();
 
     Markup:
+        See example
 
     Options:
+        See https://github.com/andysellick/circular-progress
 */
 (function (window,$) {
 	var Plugin = function(elem,options){
@@ -17,18 +21,17 @@
 		init: function(){
 			this.settings = $.extend({
 				rotateBy: 1, //amount to change progress by in each animation frame
-				initialPos: 0, //initial position on load
-				targetPos: 0, //target position to animate to on load
-				scale: 360, //FIXME
-				usePercent: 0, //if true, assume all values passed are percentages, not degrees round the circle
+				initialPos: 0, //initial position on plugin load
+				targetPos: 0, //target position to animate to on plugin load
+				scale: 360, //sets the scale of the circle. Common uses would be to have a progress meter to show percentage progress (set this to 100) or a much smaller number of steps
 				speed: 5, //speed of animation
 				includeInner: 0, //if true, make the progress a 'ring' instead of a solid circle
 				innerHTML:'', //html to put inside the circle
 				showProgress: 0, //add an additional element into the inner to show the current position
-				progPreText:'',
-				progPostText:'',
-                delayAnimation: 0,
-                onFinishMoving: function() {},
+				progPreText:'', //text to show prior to the progress output
+				progPostText:'', //text to show after the progress output
+                delayAnimation: 0, //how long to delay the initial animation on plugin load
+                onFinishMoving: function() {}, //callback function
 			}, this.defaults, this.options);
 
 			this.rpanel; //right
