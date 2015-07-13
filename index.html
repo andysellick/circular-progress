@@ -8,17 +8,22 @@
 </head>
 
 <body>
-    <div style="float:left;width:50%;">
+    <div style="float:left;width:33%;">
         <div class="progress newtest1"></div>
-
         <a href="#" id="test1">Test 1</a>
         <input type="number" id="test1num"/>
     </div>
-    <div style="float:left;width:50%;">
-        <div class="progress newtest2"></div>
 
+    <div style="float:left;width:33%;">
+        <div class="progress newtest2"></div>
         <a href="#" id="test2">Test 2</a>
         <input type="number" id="test2num"/>
+    </div>
+
+    <div style="float:left;width:33%;">
+        <div class="progress newtest3"></div>
+        <a href="#" id="test3">Test 3</a>
+        <input type="number" id="test3num"/>
     </div>
 
 
@@ -30,8 +35,12 @@
             $('.newtest1').circles({
                 innerHTML: 'this is the inner wooo',
                 showProgress: 1,
-                targetPos:50,
-                usePercent: 1,
+                initialPos:1,
+                targetPos:3,
+                scale: 6,
+                progPreText: 'Step ',
+                progPostText: ' of 6',
+                delayAnimation: 1000,
                 onFinishMoving:function(pos){
                     console.log('done ',pos);
                 }
@@ -47,6 +56,16 @@
                 }
             });
 
+            $('.newtest3').circles({
+                targetPos:90,
+                showProgress: 1,
+                scale: 100,
+                progPostText: '%',
+                onFinishMoving:function(pos){
+                    console.log('done ',pos);
+                }
+            });
+
             $('#test1').click(function(e){
                 e.preventDefault();
                 var test1 = $('.newtest1').data('circles');
@@ -57,6 +76,12 @@
                 e.preventDefault();
                 var test2 = $('.newtest2').data('circles');
                 test2.moveProgress($('#test2num').val());
+            });
+
+            $('#test3').click(function(e){
+                e.preventDefault();
+                var test3 = $('.newtest3').data('circles');
+                test3.moveProgress($('#test3num').val());
             });
 
         });

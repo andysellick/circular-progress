@@ -19,12 +19,15 @@
 				rotateBy: 1, //amount to change progress by in each animation frame
 				initialPos: 0, //initial position on load
 				targetPos: 0, //target position to animate to on load
+				scale: 360, //FIXME
 				usePercent: 0, //if true, assume all values passed are percentages, not degrees round the circle
-				speed: 50, //speed of animation
+				speed: 5, //speed of animation
 				includeInner: 0, //if true, make the progress a 'ring' instead of a solid circle
 				innerHTML:'', //html to put inside the circle
 				showProgress: 0, //add an additional element into the inner to show the current position
-                delayAnimation: 500,
+				progPreText:'',
+				progPostText:'',
+                delayAnimation: 0,
                 onFinishMoving: function() {},
 			}, this.defaults, this.options);
 
@@ -37,22 +40,13 @@
 			this.timer;
 
             //create required variables and normalise settings
-            var limit = 360;
-            if(this.settings.usePercent){
-                limit = 100;
-            }
-            this.settings.rotateBy = Math.min(this.settings.rotateBy,limit);
-            this.settings.initialPos = Math.min(this.settings.initialPos,limit);
-            this.settings.targetPos = Math.min(this.settings.targetPos,limit);
-
-            //if this flag is set, assume all values passed are percentages, and convert accordingly
-            if(this.settings.usePercent){
-                if(this.settings.rotateBy){
-                    this.settings.rotateBy = (360 / 100) * this.settings.rotateBy;
-                    this.settings.initialPos = (360 / 100) * this.settings.initialPos;
-                    this.settings.targetPos = (360 / 100) * this.settings.targetPos;
-                }
-            }
+            this.settings.rotateBy = Math.min(this.settings.rotateBy,this.settings.scale);
+            this.settings.initialPos = Math.min(this.settings.initialPos,this.settings.scale);
+            this.settings.targetPos = Math.min(this.settings.targetPos,this.settings.scale);
+            
+            //this.settings.rotateBy = this.calculateScale(this.settings.rotateBy);
+            this.settings.initialPos = this.calculateScale(this.settings.initialPos);
+            this.settings.targetPos = this.calculateScale(this.settings.targetPos);
             this.rotateBy = this.settings.rotateBy; //fixme this is currently used but probably isn't needed
 
             //create required elements
@@ -96,6 +90,16 @@
             }
         },
         
+        //given a scale and a position, work out actual degrees
+        calculateScale: function(position){
+            var multiplier = 360 / this.settings.scale;
+            return(Math.ceil(position * multiplier));
+        },
+        convertScale: function(degrees){
+            var divider = 360 / this.settings.scale;
+            return(Math.floor(degrees / divider));
+        },
+
         //set the position of the circle, no animation
         setTargetPos: function(targ){
             this.overallpos = targ;
@@ -124,10 +128,7 @@
                 },this.settings.speed);
             }
             else {
-                var output = this.overallpos;
-                if(this.settings.usePercent){
-                    output = Math.floor((output / 360) * 100);
-                }
+                var output = this.convertScale(this.overallpos);
                 this.settings.onFinishMoving.call(this,output); //call callback
             }
             this.renderCircle();
@@ -144,11 +145,7 @@
                 this.rotateElement(this.lpanel,this.overallpos - 180);
             }
             if(this.settings.showProgress){
-                var output = this.overallpos;
-                if(this.settings.usePercent){
-                    output = Math.floor((output / 360) * 100) + '%';
-                }
-
+                var output = this.settings.progPreText + this.convertScale(this.overallpos) + this.settings.progPostText;
                 this.innerprogress.html(output);
             }
         },
@@ -167,11 +164,8 @@
         //intended as a public function, pass through the position you want
 		moveProgress: function(targ){
             clearTimeout(this.timer);
+            targ = this.calculateScale(targ);
             targ = Math.min(360,targ);
-            if(this.settings.usePercent){
-                targ = Math.min(100,targ);
-                targ = (360 / 100) * targ;
-            }
             if(targ != this.overallpos){
                 this.animateCircle(this.overallpos,targ);
             }
