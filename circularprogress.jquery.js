@@ -14,7 +14,7 @@
 		this.elem = elem;
 		this.$elem = $(elem);
 		this.options = options;
-		this.init(); //FIXME have to manually call the init function - not sure why
+		this.init(); //FIXME have to manually call the init function
 	}
 
 	Plugin.prototype = {
