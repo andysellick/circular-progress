@@ -168,7 +168,7 @@
 		moveProgress: function(targ){
             clearTimeout(this.timer);
             targ = this.calculateScale(targ);
-            targ = Math.min(360,targ);
+            targ = Math.max(Math.min(360,targ),0);
             if(targ != this.overallpos){
                 this.animateCircle(this.overallpos,targ);
             }
