@@ -43,7 +43,7 @@
 			this.timer;
 
             //create required variables and normalise settings
-            this.settings.rotateBy = Math.min(this.settings.rotateBy,this.settings.scale);
+            this.settings.rotateBy = Math.min(this.settings.rotateBy,360);
             this.settings.initialPos = Math.min(this.settings.initialPos,this.settings.scale);
             this.settings.targetPos = Math.min(this.settings.targetPos,this.settings.scale);
             
