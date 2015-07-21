@@ -64,7 +64,10 @@ Milliseconds before the animation should start on plugin load.
 Make a progress meter of 5 steps, loading at step 1 and animating round to step 3, with a callback when it has finished animating.
 
 ```html
-    $('.progress').circles({
+<div class="progress example1"></div>
+
+<script>
+    $('.example1').circles({
         showProgress: 1,
         initialPos:1,
         targetPos:3,
@@ -76,6 +79,7 @@ Make a progress meter of 5 steps, loading at step 1 and animating round to step 
             console.log('stopped moving at step ',pos);
         }
     });
+</script>
 ```
 
 See index.html for a more thorough series of examples.
