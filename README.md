@@ -82,7 +82,7 @@ Make a progress meter of 5 steps, loading at step 1 and animating round to step 
 </script>
 ```
 
-See index.html for a more thorough series of examples.
+See http://www.custarddoughnuts.co.uk/article/2015/8/17/jquery-circular-progress-plugin-improved for examples and code snippets.
 
 
 
